@@ -53,7 +53,7 @@ module ActsAsParanoid
     end
 
     # Magic!
-    default_scope { where(paranoid_default_scope_sql) }
+    default_scope where(paranoid_default_scope_sql)
   end
 
   module ClassMethods
