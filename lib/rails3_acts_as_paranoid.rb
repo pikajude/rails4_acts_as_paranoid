@@ -7,11 +7,11 @@ module ActiveRecord
     def paranoid?
       klass.try(:paranoid?) ? true : false
     end
-    
+
     def paranoid_deletion_attributes
       { klass.paranoid_column => klass.delete_now_value }
     end
-    
+
     alias_method :destroy!, :destroy
     def destroy(id)
       if paranoid?
@@ -20,9 +20,9 @@ module ActiveRecord
         destroy!(id)
       end
     end
-    
+
     alias_method :really_delete_all!, :delete_all
-    
+
     def delete_all!(conditions = nil)
       if conditions
         # This idea comes out of Rails 3.1 ActiveRecord::Record.delete_all
@@ -31,7 +31,7 @@ module ActiveRecord
         really_delete_all!
       end
     end
-    
+
     def delete_all(conditions = nil)
       if paranoid?
         update_all(paranoid_deletion_attributes, conditions)
@@ -39,11 +39,11 @@ module ActiveRecord
         delete_all!(conditions)
       end
     end
-    
+
     def arel=(a)
       @arel = a
     end
-    
+
     def with_deleted
       wd = self.clone
       wd.default_scoped = false
@@ -54,33 +54,78 @@ module ActiveRecord
 end
 
 module ActsAsParanoid
-  
+
   def paranoid?
     self.included_modules.include?(InstanceMethods)
   end
-  
+
   def validates_as_paranoid
     extend ParanoidValidations::ClassMethods
   end
-  
+
+  # TODO: Make private
+  def primary_deleted_column(options={})
+    return {} unless options[:columns]
+    column = options[:columns].detect do |column_config|
+        column_config[:column] == options[:primary_deleted_column]
+    end
+    column || options[:columns].first
+  end
+
+  # TODO: Make private
+  def secondary_deleted_columns(options={})
+    return [] unless options[:columns]
+    primary_deleted_column_name = primary_deleted_column(options)[:column]
+    options[:columns].reject { |column_config| column_config[:column] == options[:primary_deleted_column] }
+  end
+
+  # TODO: Make private
+  def default_primary_deleted_column
+    {
+      :column                         => "deleted_at",
+      :column_type                    => "time",
+      :recover_dependent_associations => true,
+      :dependent_recovery_window      => 2.minutes,
+      :deleted_value                  => "deleted"
+    }
+  end
+
+  def primary_column(options)
+    default_primary_deleted_column.merge(options.merge(primary_deleted_column(options)))
+  end
+
+  def column_reference(column)
+    "#{self.table_name}.#{column}"
+  end
+
+  def paranoid_column_reference
+    column_reference configuration[:primary_deleted_column][:column]
+  end
+
+  def validate_paranoid_columns!
+    unless ['time', 'boolean', 'string'].include? configuration[:primary_deleted_column][:column_type]
+      raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{configuration[:primary_deleted_column][:column_type]}"
+    end
+  end
+
   def acts_as_paranoid(options = {})
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
-    
-    class_attribute :paranoid_configuration, :paranoid_column_reference
-    
-    self.paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 2.minutes }
-    self.paranoid_configuration.merge!({ :deleted_value => "deleted" }) if options[:column_type] == "string"
-    self.paranoid_configuration.merge!(options) # user options
 
-    raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean', 'string'].include? paranoid_configuration[:column_type]
+    # TODO: rename configuration to something more paranoid specific
+    class_attribute :paranoid_configuration, :configuration
 
-    self.paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
-    
+    self.configuration = {
+      :primary_deleted_column    => primary_column(options),
+      :secondary_deleted_columns => secondary_deleted_columns(options)
+    }
+
+    validate_paranoid_columns!
+
     return if paranoid?
-    
+
     # Magic!
     default_scope { where("#{paranoid_column_reference} IS ?", nil) }
-    
+
     scope :paranoid_deleted_around_time, lambda {|value, window|
       if self.class.respond_to?(:paranoid?) && self.class.paranoid?
         if self.class.paranoid_column_type == 'time' && ![true, false].include?(value)
@@ -88,9 +133,9 @@ module ActsAsParanoid
         else
           self.only_deleted
         end
-      end if paranoid_configuration[:column_type] == 'time'
+      end if configuration[:primary_deleted_column][:column_type] == 'time'
     }
-    
+
     include InstanceMethods
     extend ClassMethods
   end
@@ -115,15 +160,15 @@ module ActsAsParanoid
     def only_deleted
       self.unscoped.where("#{paranoid_column_reference} IS NOT ?", nil)
     end
-    
+
     def deletion_conditions(id_or_array)
       ["id in (?)", [id_or_array].flatten]
     end
-    
+
     def delete!(id_or_array)
       delete_all!(deletion_conditions(id_or_array))
     end
-    
+
     def delete(id_or_array)
       delete_all(deletion_conditions(id_or_array))
     end
@@ -133,36 +178,40 @@ module ActsAsParanoid
     end
 
     def delete_all(conditions = nil)
-      update_all ["#{paranoid_configuration[:column]} = ?", delete_now_value], conditions
+      columns = configuration[:secondary_deleted_columns].push(configuration[:primary_deleted_column])
+      update_string = columns.map{ |column| "#{column[:column]} = ?" }.join(", ")
+      update_values = columns.map{ |column| delete_now_value column }
+      update_all [update_string, *update_values], conditions
     end
 
     def paranoid_column
-      paranoid_configuration[:column].to_sym
+      configuration[:primary_deleted_column][:column].to_sym
     end
 
     def paranoid_column_type
-      paranoid_configuration[:column_type].to_sym
+      configuration[:primary_deleted_column][:column_type].to_sym
     end
 
     def dependent_associations
       self.reflect_on_all_associations.select {|a| [:destroy, :delete_all].include?(a.options[:dependent]) }
     end
 
-    def delete_now_value
-      case paranoid_configuration[:column_type]
+    def delete_now_value(column=nil)
+      column ||= configuration[:primary_deleted_column]
+      case column[:column_type]
         when "time" then Time.now
         when "boolean" then true
-        when "string" then paranoid_configuration[:deleted_value]
+        when "string" then column[:deleted_value]
       end
     end
   end
-  
+
   module InstanceMethods
-    
+
     def paranoid_value
       self.send(self.class.paranoid_column)
     end
-    
+
     def destroy!
       with_transaction_returning_status do
         run_callbacks :destroy do
@@ -187,7 +236,7 @@ module ActsAsParanoid
         destroy!
       end
     end
-    
+
     def delete!
       with_transaction_returning_status do
         act_on_dependent_destroy_associations
@@ -196,7 +245,7 @@ module ActsAsParanoid
         freeze
       end
     end
-    
+
     def delete
       if paranoid_value.nil?
         with_transaction_returning_status do
@@ -208,11 +257,11 @@ module ActsAsParanoid
         delete!
       end
     end
-    
+
     def recover(options={})
       options = {
-                  :recursive => self.class.paranoid_configuration[:recover_dependent_associations],
-                  :recovery_window => self.class.paranoid_configuration[:dependent_recovery_window]
+                  :recursive => self.class.configuration[:primary_deleted_column][:recover_dependent_associations],
+                  :recovery_window => self.class.configuration[:primary_deleted_column][:dependent_recovery_window]
                 }.merge(options)
 
       self.class.transaction do
@@ -247,7 +296,7 @@ module ActsAsParanoid
         end
       end
     end
-    
+
     def act_on_dependent_destroy_associations
       self.class.dependent_associations.each do |association|
         if association.collection? && self.send(association.name).paranoid?
@@ -262,14 +311,13 @@ module ActsAsParanoid
       !paranoid_value.nil?
     end
     alias_method :destroyed?, :deleted?
-    
+
   private
     def paranoid_value=(value)
       self.send("#{self.class.paranoid_column}=", value)
     end
-    
+
   end
-  
 end
 
 

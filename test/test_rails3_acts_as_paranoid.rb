@@ -5,34 +5,43 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidBoolean.count
     assert_equal 1, ParanoidString.count
+    assert_equal 3, ParanoidMultipleColumns.count
 
     ParanoidTime.first.destroy
     ParanoidBoolean.delete_all("name = 'paranoid' OR name = 'really paranoid'")
     ParanoidString.first.destroy
+    ParanoidMultipleColumns.first.destroy
     assert_equal 2, ParanoidTime.count
     assert_equal 1, ParanoidBoolean.count
     assert_equal 0, ParanoidString.count
-    assert_equal 1, ParanoidTime.only_deleted.count 
+    assert_equal 2, ParanoidMultipleColumns.count
+    assert_equal 1, ParanoidTime.only_deleted.count
     assert_equal 2, ParanoidBoolean.only_deleted.count
     assert_equal 1, ParanoidString.only_deleted.count
+    assert_equal 1, ParanoidMultipleColumns.only_deleted.count
     assert_equal 3, ParanoidTime.with_deleted.count
     assert_equal 3, ParanoidBoolean.with_deleted.count
     assert_equal 1, ParanoidString.with_deleted.count
+    assert_equal 3, ParanoidMultipleColumns.with_deleted.count
   end
 
   def test_real_removal
     ParanoidTime.first.destroy!
     ParanoidBoolean.delete_all!("name = 'extremely paranoid' OR name = 'really paranoid'")
     ParanoidString.first.destroy!
+    ParanoidMultipleColumns.first.destroy!
     assert_equal 2, ParanoidTime.count
     assert_equal 1, ParanoidBoolean.count
     assert_equal 0, ParanoidString.count
+    assert_equal 2, ParanoidMultipleColumns.count
     assert_equal 2, ParanoidTime.with_deleted.count
     assert_equal 1, ParanoidBoolean.with_deleted.count
     assert_equal 0, ParanoidString.with_deleted.count
+    assert_equal 2, ParanoidMultipleColumns.with_deleted.count
     assert_equal 0, ParanoidTime.only_deleted.count
     assert_equal 0, ParanoidBoolean.only_deleted.count
     assert_equal 0, ParanoidString.only_deleted.count
+    assert_equal 0, ParanoidMultipleColumns.only_deleted.count
 
     ParanoidTime.first.destroy
     ParanoidTime.only_deleted.first.destroy
@@ -43,11 +52,22 @@ class ParanoidTest < ParanoidBaseTest
     assert_empty ParanoidTime.with_deleted.all
   end
 
+  def test_multiple_columns
+    assert_equal 3, ParanoidMultipleColumns.count
+
+    paranoid_model = ParanoidMultipleColumns.first
+    paranoid_model.destroy
+
+    paranoid_model.reload
+    assert_equal true, paranoid_model.is_deleted
+    assert_equal "dead", paranoid_model.deleted
+  end
+
   def test_paranoid_scope
     assert_raise(NoMethodError) { NotParanoid.delete_all! }
     assert_raise(NoMethodError) { NotParanoid.first.destroy! }
     assert_raise(NoMethodError) { NotParanoid.with_deleted }
-    assert_raise(NoMethodError) { NotParanoid.only_deleted }    
+    assert_raise(NoMethodError) { NotParanoid.only_deleted }
   end
 
   def test_recovery
@@ -142,28 +162,31 @@ class ParanoidTest < ParanoidBaseTest
     ParanoidTime.first.destroy
     assert ParanoidTime.with_deleted.first.deleted?
 
+    ParanoidMultipleColumns.first.destroy
+    assert ParanoidMultipleColumns.with_deleted.first.deleted?
+
     ParanoidString.first.destroy
     assert ParanoidString.with_deleted.first.deleted?
   end
-  
-  def test_paranoid_destroy_callbacks    
+
+  def test_paranoid_destroy_callbacks
     @paranoid_with_callback = ParanoidWithCallback.first
     ParanoidWithCallback.transaction do
       @paranoid_with_callback.destroy
     end
-    
+
     assert @paranoid_with_callback.called_before_destroy
     assert @paranoid_with_callback.called_after_destroy
     assert @paranoid_with_callback.called_after_commit_on_destroy
   end
-  
+
   def test_hard_destroy_callbacks
     @paranoid_with_callback = ParanoidWithCallback.first
-    
+
     ParanoidWithCallback.transaction do
       @paranoid_with_callback.destroy!
     end
-    
+
     assert @paranoid_with_callback.called_before_destroy
     assert @paranoid_with_callback.called_after_destroy
     assert @paranoid_with_callback.called_after_commit_on_destroy
@@ -182,7 +205,7 @@ class ParanoidTest < ParanoidBaseTest
     end
 
       assert @paranoid_with_callback.called_before_recover
-      assert @paranoid_with_callback.called_after_recover    
+      assert @paranoid_with_callback.called_after_recover
   end
 end
 
@@ -207,7 +230,7 @@ class ValidatesUniquenessTest < ParanoidBaseTest
   end
 end
 
-class AssociationsTest < ParanoidBaseTest  
+class AssociationsTest < ParanoidBaseTest
   def test_removal_with_associations
     # This test shows that the current implementation doesn't handle
     # assciation deletion correctly (when hard deleting via parent-object)
@@ -215,7 +238,7 @@ class AssociationsTest < ParanoidBaseTest
     paranoid_company_2 = ParanoidDeleteCompany.create! :name => "ParanoidDestroyCompany #1"
     paranoid_company_1.paranoid_products.create! :name => "ParanoidProduct #1"
     paranoid_company_2.paranoid_products.create! :name => "ParanoidProduct #2"
-    
+
     assert_equal 1, ParanoidDestroyCompany.count
     assert_equal 1, ParanoidDeleteCompany.count
     assert_equal 2, ParanoidProduct.count
@@ -225,13 +248,13 @@ class AssociationsTest < ParanoidBaseTest
     assert_equal 1, ParanoidProduct.count
     assert_equal 1, ParanoidDestroyCompany.with_deleted.count
     assert_equal 2, ParanoidProduct.with_deleted.count
-  
+
     ParanoidDestroyCompany.with_deleted.first.destroy!
     assert_equal 0, ParanoidDestroyCompany.count
     assert_equal 1, ParanoidProduct.count
     assert_equal 0, ParanoidDestroyCompany.with_deleted.count
     assert_equal 1, ParanoidProduct.with_deleted.count
-    
+
     ParanoidDeleteCompany.with_deleted.first.destroy!
     assert_equal 0, ParanoidDeleteCompany.count
     assert_equal 0, ParanoidProduct.count
@@ -247,7 +270,7 @@ class InheritanceTest < ParanoidBaseTest
     has_many_inherited_super_paranoidz.super_paranoidz.create
     assert_nothing_raised(NoMethodError) { has_many_inherited_super_paranoidz.destroy }
   end
-  
+
   def test_class_instance_variables_are_inherited
     assert_nothing_raised(ActiveRecord::StatementInvalid) { InheritedParanoid.paranoid_column }
   end
@@ -261,7 +284,7 @@ class ParanoidObserverTest < ParanoidBaseTest
 
     assert_nil ParanoidObserver.instance.called_before_recover
     assert_nil ParanoidObserver.instance.called_after_recover
-    
+
     ParanoidWithCallback.find(@subject.id).recover
 
     assert_equal @subject, ParanoidObserver.instance.called_before_recover
