@@ -41,6 +41,14 @@ def setup_db
       t.timestamps
     end
 
+    create_table :paranoid_defaults do |t|
+      t.string    :name
+      t.boolean   :is_deleted
+      t.integer   :paranoid_time_id
+
+      t.timestamps
+    end
+
     create_table :paranoid_strings do |t|
       t.string    :name
       t.string    :deleted
@@ -196,6 +204,12 @@ class ParanoidMultipleColumns < ActiveRecord::Base
   :primary_deleted_column => :is_deleted
 end
 
+ActsAsParanoid.default_options = { :columns => [{ :column => :is_deleted, :column_type => 'boolean' }] }
+class ParanoidDefault < ActiveRecord::Base
+  acts_as_paranoid
+end
+ActsAsParanoid::DEFAULT_OPTIONS = {}
+
 class NotParanoid < ActiveRecord::Base
 end
 
@@ -350,6 +364,7 @@ class ParanoidBaseTest < ActiveSupport::TestCase
       ParanoidTime.create! :name => name
       ParanoidBoolean.create! :name => name
       ParanoidMultipleColumns.create! :name => name
+      ParanoidDefault.create! :name => name
     end
 
     ParanoidString.create! :name => "strings can be paranoid"

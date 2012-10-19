@@ -52,6 +52,14 @@ class ParanoidTest < ParanoidBaseTest
     assert_empty ParanoidTime.with_deleted.all
   end
 
+  def test_default_options
+    model = ParanoidDefault.first
+    model.destroy
+
+    assert_equal true, model.deleted?
+    assert_equal true, model.is_deleted
+  end
+
   def test_multiple_columns
     assert_equal 3, ParanoidMultipleColumns.count
 
