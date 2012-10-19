@@ -54,6 +54,11 @@ module ActiveRecord
 end
 
 module ActsAsParanoid
+  DEFAULT_OPTIONS = {}
+
+  def self.default_options=(options={})
+    DEFAULT_OPTIONS.merge! options
+  end
 
   def paranoid?
     self.included_modules.include?(InstanceMethods)
@@ -64,6 +69,7 @@ module ActsAsParanoid
   end
 
   def acts_as_paranoid(options = {})
+    options.merge!(DEFAULT_OPTIONS)
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
 
     class_attribute :paranoid_configuration
