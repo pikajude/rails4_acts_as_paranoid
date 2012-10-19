@@ -63,51 +63,6 @@ module ActsAsParanoid
     extend ParanoidValidations::ClassMethods
   end
 
-  # TODO: Make private
-  def primary_deleted_column(options={})
-    return {} unless options[:columns]
-    column = options[:columns].detect do |column_config|
-        column_config[:column] == options[:primary_deleted_column]
-    end
-    column || options[:columns].first
-  end
-
-  # TODO: Make private
-  def secondary_deleted_columns(options={})
-    return [] unless options[:columns]
-    primary_deleted_column_name = primary_deleted_column(options)[:column]
-    options[:columns].reject { |column_config| column_config[:column] == options[:primary_deleted_column] }
-  end
-
-  # TODO: Make private
-  def default_primary_deleted_column
-    {
-      :column                         => "deleted_at",
-      :column_type                    => "time",
-      :recover_dependent_associations => true,
-      :dependent_recovery_window      => 2.minutes,
-      :deleted_value                  => "deleted"
-    }
-  end
-
-  def primary_column(options)
-    default_primary_deleted_column.merge(options.merge(primary_deleted_column(options)))
-  end
-
-  def column_reference(column)
-    "#{self.table_name}.#{column}"
-  end
-
-  def paranoid_column_reference
-    column_reference configuration[:primary_deleted_column][:column]
-  end
-
-  def validate_paranoid_columns!
-    unless ['time', 'boolean', 'string'].include? configuration[:primary_deleted_column][:column_type]
-      raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{configuration[:primary_deleted_column][:column_type]}"
-    end
-  end
-
   def acts_as_paranoid(options = {})
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
 
@@ -138,6 +93,48 @@ module ActsAsParanoid
 
     include InstanceMethods
     extend ClassMethods
+  end
+
+  def primary_column(options)
+    default_primary_deleted_column.merge(options.merge(primary_deleted_column(options)))
+  end
+
+  def default_primary_deleted_column
+    {
+      :column                         => "deleted_at",
+      :column_type                    => "time",
+      :recover_dependent_associations => true,
+      :dependent_recovery_window      => 2.minutes,
+      :deleted_value                  => "deleted"
+    }
+  end
+
+  def primary_deleted_column(options={})
+    return {} unless options[:columns]
+    column = options[:columns].detect do |column_config|
+      column_config[:column] == options[:primary_deleted_column]
+    end
+    column || options[:columns].first
+  end
+
+  def secondary_deleted_columns(options={})
+    return [] unless options[:columns]
+    primary_deleted_column_name = primary_deleted_column(options)[:column]
+    options[:columns].reject { |column_config| column_config[:column] == options[:primary_deleted_column] }
+  end
+
+  def column_reference(column)
+    "#{self.table_name}.#{column}"
+  end
+
+  def paranoid_column_reference
+    column_reference configuration[:primary_deleted_column][:column]
+  end
+
+  def validate_paranoid_columns!
+    unless ['time', 'boolean', 'string'].include? configuration[:primary_deleted_column][:column_type]
+      raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{configuration[:primary_deleted_column][:column_type]}"
+    end
   end
 
   module ClassMethods
