@@ -87,7 +87,7 @@ module ActsAsParanoid
         else
           self.only_deleted
         end
-      end if configuration[:primary_deleted_column][:column_type] == 'time'
+      end if paranoid_configuration[:primary_deleted_column][:column_type] == 'time'
     }
 
     include InstanceMethods
@@ -127,12 +127,12 @@ module ActsAsParanoid
   end
 
   def paranoid_column_reference
-    column_reference configuration[:primary_deleted_column][:column]
+    column_reference paranoid_configuration[:primary_deleted_column][:column]
   end
 
   def validate_paranoid_columns!
-    unless ['time', 'boolean', 'string'].include? configuration[:primary_deleted_column][:column_type]
-      raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{configuration[:primary_deleted_column][:column_type]}"
+    unless ['time', 'boolean', 'string'].include? paranoid_configuration[:primary_deleted_column][:column_type]
+      raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:primary_deleted_column][:column_type]}"
     end
   end
 
@@ -174,18 +174,18 @@ module ActsAsParanoid
     end
 
     def delete_all(conditions = nil)
-      columns = configuration[:secondary_deleted_columns].push(configuration[:primary_deleted_column])
+      columns = paranoid_configuration[:secondary_deleted_columns].push(paranoid_configuration[:primary_deleted_column])
       update_string = columns.map{ |column| "#{column[:column]} = ?" }.join(", ")
       update_values = columns.map{ |column| delete_now_value column }
       update_all [update_string, *update_values], conditions
     end
 
     def paranoid_column
-      configuration[:primary_deleted_column][:column].to_sym
+      paranoid_configuration[:primary_deleted_column][:column].to_sym
     end
 
     def paranoid_column_type
-      configuration[:primary_deleted_column][:column_type].to_sym
+      paranoid_configuration[:primary_deleted_column][:column_type].to_sym
     end
 
     def dependent_associations
@@ -193,7 +193,7 @@ module ActsAsParanoid
     end
 
     def delete_now_value(column=nil)
-      column ||= configuration[:primary_deleted_column]
+      column ||= paranoid_configuration[:primary_deleted_column]
       case column[:column_type]
         when "time" then Time.now
         when "boolean" then true
