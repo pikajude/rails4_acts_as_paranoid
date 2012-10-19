@@ -66,10 +66,9 @@ module ActsAsParanoid
   def acts_as_paranoid(options = {})
     raise ArgumentError, "Hash expected, got #{options.class.name}" if not options.is_a?(Hash) and not options.empty?
 
-    # TODO: rename configuration to something more paranoid specific
-    class_attribute :paranoid_configuration, :configuration
+    class_attribute :paranoid_configuration
 
-    self.configuration = {
+    self.paranoid_configuration = {
       :primary_deleted_column    => primary_column(options),
       :secondary_deleted_columns => secondary_deleted_columns(options)
     }
@@ -257,8 +256,8 @@ module ActsAsParanoid
 
     def recover(options={})
       options = {
-                  :recursive => self.class.configuration[:primary_deleted_column][:recover_dependent_associations],
-                  :recovery_window => self.class.configuration[:primary_deleted_column][:dependent_recovery_window]
+                  :recursive => self.class.paranoid_configuration[:primary_deleted_column][:recover_dependent_associations],
+                  :recovery_window => self.class.paranoid_configuration[:primary_deleted_column][:dependent_recovery_window]
                 }.merge(options)
 
       self.class.transaction do
