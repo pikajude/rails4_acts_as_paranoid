@@ -4,13 +4,16 @@ class ParanoidTest < ParanoidBaseTest
   def test_fake_removal
     assert_equal 3, ParanoidTime.count
     assert_equal 3, ParanoidBoolean.count
+    assert_equal 3, ParanoidBooleanAndDate.count
     assert_equal 1, ParanoidString.count
 
     ParanoidTime.first.destroy
     ParanoidBoolean.delete_all("name = 'paranoid' OR name = 'really paranoid'")
+    ParanoidBooleanAndDate.first.destroy
     ParanoidString.first.destroy
     assert_equal 2, ParanoidTime.count
     assert_equal 1, ParanoidBoolean.count
+    assert_equal 2, ParanoidBooleanAndDate.count
     assert_equal 0, ParanoidString.count
     assert_equal 1, ParanoidTime.only_deleted.count
     assert_equal 2, ParanoidBoolean.only_deleted.count
@@ -20,18 +23,35 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 1, ParanoidString.with_deleted.count
   end
 
+  def test_multi_column_support
+    model = ParanoidBooleanAndDate.first
+
+    assert_equal false, model.is_deleted
+    assert_nil   model.deleted_at
+
+    model.destroy
+    model.reload
+
+    assert_equal true, model.is_deleted
+    assert_equal Time, model.deleted_at.class
+  end
+
   def test_real_removal
     ParanoidTime.first.destroy!
     ParanoidBoolean.delete_all!("name = 'extremely paranoid' OR name = 'really paranoid'")
+    ParanoidBooleanAndDate.first.destroy!
     ParanoidString.first.destroy!
     assert_equal 2, ParanoidTime.count
     assert_equal 1, ParanoidBoolean.count
+    assert_equal 2, ParanoidBooleanAndDate.count
     assert_equal 0, ParanoidString.count
     assert_equal 2, ParanoidTime.with_deleted.count
     assert_equal 1, ParanoidBoolean.with_deleted.count
+    assert_equal 2, ParanoidBooleanAndDate.with_deleted.count
     assert_equal 0, ParanoidString.with_deleted.count
     assert_equal 0, ParanoidTime.only_deleted.count
     assert_equal 0, ParanoidBoolean.only_deleted.count
+    assert_equal 0, ParanoidBooleanAndDate.only_deleted.count
     assert_equal 0, ParanoidString.only_deleted.count
 
     ParanoidTime.first.destroy
@@ -56,6 +76,12 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal 2, ParanoidBoolean.count
     ParanoidBoolean.only_deleted.first.recover
     assert_equal 3, ParanoidBoolean.count
+
+    assert_equal 3, ParanoidBooleanAndDate.count
+    ParanoidBooleanAndDate.first.destroy
+    assert_equal 2, ParanoidBooleanAndDate.count
+    ParanoidBooleanAndDate.only_deleted.first.recover
+    assert_equal 3, ParanoidBooleanAndDate.count
 
     assert_equal 1, ParanoidString.count
     ParanoidString.first.destroy

@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'test/unit'
 require 'active_support'
+require 'active_support/core_ext/numeric/time'
 require 'active_record'
 require 'active_model'
 
@@ -26,6 +27,15 @@ def setup_db
 
     create_table :paranoid_booleans do |t|
       t.string    :name
+      t.boolean   :is_deleted, :default => false
+      t.integer   :paranoid_time_id
+
+      t.timestamps
+    end
+
+    create_table :paranoid_boolean_and_dates do |t|
+      t.string    :name
+      t.datetime  :deleted_at
       t.boolean   :is_deleted, :default => false
       t.integer   :paranoid_time_id
 
@@ -166,6 +176,7 @@ class ParanoidTime < ActiveRecord::Base
   belongs_to :not_paranoid, :dependent => :destroy
 end
 
+default_config = ActsAsParanoid::DEFAULT_CONFIG.dup
 ActsAsParanoid.default_config = { :column_type => "boolean", :column => "is_deleted" }
 class ParanoidBoolean < ActiveRecord::Base
   acts_as_paranoid
@@ -175,7 +186,14 @@ class ParanoidBoolean < ActiveRecord::Base
   belongs_to :paranoid_time
   has_one :paranoid_has_one_dependant, :dependent => :destroy
 end
-ActsAsParanoid::DEFAULT_CONFIG = {}
+Kernel.silence_warnings { ActsAsParanoid::DEFAULT_CONFIG = default_config }
+
+class ParanoidBooleanAndDate < ActiveRecord::Base
+  acts_as_paranoid :columns => [
+    { :column_type => "boolean", :column => "is_deleted" },
+    { :column_type => "time"   , :column => "deleted_at" }
+  ]
+end
 
 class ParanoidString < ActiveRecord::Base
   acts_as_paranoid :column_type => "string", :column => "deleted", :deleted_value => "dead"
@@ -334,6 +352,7 @@ class ParanoidBaseTest < ActiveSupport::TestCase
     ["paranoid", "really paranoid", "extremely paranoid"].each do |name|
       ParanoidTime.create! :name => name
       ParanoidBoolean.create! :name => name
+      ParanoidBooleanAndDate.create! :name => name
     end
 
     ParanoidString.create! :name => "strings can be paranoid"

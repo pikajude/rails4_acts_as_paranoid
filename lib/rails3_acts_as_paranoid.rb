@@ -54,7 +54,12 @@ module ActiveRecord
 end
 
 module ActsAsParanoid
-  DEFAULT_CONFIG = {}
+  DEFAULT_CONFIG = {
+    :column                         => "deleted_at",
+    :column_type                    => "time",
+    :recover_dependent_associations => true,
+    :dependent_recovery_window      => 2.minutes
+  }
 
   def self.default_config=(config={})
     DEFAULT_CONFIG.merge! config
@@ -73,11 +78,31 @@ module ActsAsParanoid
   end
 
   def non_deleted_value
-    paranoid_configuration[:column_type] == "boolean" ? false : nil
+    primary_paranoid_column[:column_type] == "boolean" ? false : nil
   end
 
   def validates_as_paranoid
     extend ParanoidValidations::ClassMethods
+  end
+
+  def primary_paranoid_column
+    self.paranoid_configuration[:primary_column]
+  end
+
+  def secondary_paranoid_columns
+    self.paranoid_configuration[:secondary_columns]
+  end
+
+  def build_column_config(options={})
+    column = DEFAULT_CONFIG.dup
+    column = column.merge(:deleted_value => "deleted") if options[:column_type] == "string"
+    column = column.merge(options)
+
+    unless ['time', 'boolean', 'string'].include? column[:column_type]
+      raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{column[:column_type]}"
+    end
+
+    column
   end
 
   def acts_as_paranoid(options = {})
@@ -85,13 +110,20 @@ module ActsAsParanoid
 
     class_attribute :paranoid_configuration, :paranoid_column_reference
 
-    self.paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 2.minutes }
-    self.paranoid_configuration.merge!({ :deleted_value => "deleted" }) if options[:column_type] == "string"
-    self.paranoid_configuration.merge!(DEFAULT_CONFIG.merge(options)) # user options
+    if options[:columns]
+      primary_column    = options[:columns].first
+      secondary_columns = options[:columns][1..-1]
+    else
+      primary_column    = options
+      secondary_columns = []
+    end
+    self.paranoid_configuration = {
+      :primary_column    => build_column_config(primary_column),
+      :secondary_columns => secondary_columns.map { |column| build_column_config(column) }
+    }
 
-    raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean', 'string'].include? paranoid_configuration[:column_type]
 
-    self.paranoid_column_reference = "#{self.table_name}.#{paranoid_configuration[:column]}"
+    self.paranoid_column_reference = "#{self.table_name}.#{primary_paranoid_column[:column]}"
 
     return if paranoid?
 
@@ -105,7 +137,7 @@ module ActsAsParanoid
         else
           self.only_deleted
         end
-      end if paranoid_configuration[:column_type] == 'time'
+      end if primary_paranoid_column[:column_type] == 'time'
     }
 
     include InstanceMethods
@@ -150,26 +182,34 @@ module ActsAsParanoid
     end
 
     def delete_all(conditions = nil)
-      update_all ["#{paranoid_configuration[:column]} = ?", delete_now_value], conditions
+      columns = secondary_paranoid_columns.push(primary_paranoid_column)
+
+      sql = columns.map do |column|
+        "#{column[:column]} = ?"
+      end.join(", ")
+      values = columns.map{ |column| delete_now_value(column) }
+
+      update_all [sql, *values], conditions
     end
 
     def paranoid_column
-      paranoid_configuration[:column].to_sym
+      primary_paranoid_column[:column].to_sym
     end
 
     def paranoid_column_type
-      paranoid_configuration[:column_type].to_sym
+      primary_paranoid_column[:column_type].to_sym
     end
 
     def dependent_associations
       self.reflect_on_all_associations.select {|a| [:destroy, :delete_all].include?(a.options[:dependent]) }
     end
 
-    def delete_now_value
-      case paranoid_configuration[:column_type]
+    def delete_now_value(column=nil)
+      column ||= primary_paranoid_column
+      case column[:column_type]
         when "time" then Time.now
         when "boolean" then true
-        when "string" then paranoid_configuration[:deleted_value]
+        when "string" then column[:deleted_value]
       end
     end
   end
@@ -228,8 +268,8 @@ module ActsAsParanoid
 
     def recover(options={})
       options = {
-                  :recursive => self.class.paranoid_configuration[:recover_dependent_associations],
-                  :recovery_window => self.class.paranoid_configuration[:dependent_recovery_window]
+                  :recursive => self.class.primary_paranoid_column[:recover_dependent_associations],
+                  :recovery_window => self.class.primary_paranoid_column[:dependent_recovery_window]
                 }.merge(options)
 
       self.class.transaction do
