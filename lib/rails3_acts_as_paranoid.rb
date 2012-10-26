@@ -54,6 +54,11 @@ module ActiveRecord
 end
 
 module ActsAsParanoid
+  DEFAULT_CONFIG = {}
+
+  def self.default_config=(config={})
+    DEFAULT_CONFIG.merge! config
+  end
 
   def paranoid?
     self.included_modules.include?(InstanceMethods)
@@ -82,7 +87,7 @@ module ActsAsParanoid
 
     self.paranoid_configuration = { :column => "deleted_at", :column_type => "time", :recover_dependent_associations => true, :dependent_recovery_window => 2.minutes }
     self.paranoid_configuration.merge!({ :deleted_value => "deleted" }) if options[:column_type] == "string"
-    self.paranoid_configuration.merge!(options) # user options
+    self.paranoid_configuration.merge!(DEFAULT_CONFIG.merge(options)) # user options
 
     raise ArgumentError, "'time', 'boolean' or 'string' expected for :column_type option, got #{paranoid_configuration[:column_type]}" unless ['time', 'boolean', 'string'].include? paranoid_configuration[:column_type]
 

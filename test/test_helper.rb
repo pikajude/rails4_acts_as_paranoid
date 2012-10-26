@@ -166,14 +166,16 @@ class ParanoidTime < ActiveRecord::Base
   belongs_to :not_paranoid, :dependent => :destroy
 end
 
+ActsAsParanoid.default_config = { :column_type => "boolean", :column => "is_deleted" }
 class ParanoidBoolean < ActiveRecord::Base
-  acts_as_paranoid :column_type => "boolean", :column => "is_deleted"
+  acts_as_paranoid
   validates_as_paranoid
   validates_uniqueness_of_without_deleted :name
 
   belongs_to :paranoid_time
   has_one :paranoid_has_one_dependant, :dependent => :destroy
 end
+ActsAsParanoid::DEFAULT_CONFIG = {}
 
 class ParanoidString < ActiveRecord::Base
   acts_as_paranoid :column_type => "string", :column => "deleted", :deleted_value => "dead"
