@@ -11,6 +11,7 @@ $:.unshift "#{File.dirname(__FILE__)}/../lib/validations"
 require 'init'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+ActiveRecord::Migration.verbose = false
 
 def setup_db
   ActiveRecord::Schema.define(:version => 1) do
