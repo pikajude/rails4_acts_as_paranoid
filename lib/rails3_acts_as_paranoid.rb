@@ -59,6 +59,18 @@ module ActsAsParanoid
     self.included_modules.include?(InstanceMethods)
   end
 
+  def is_not_paranoid_deleted
+    ["#{paranoid_column_reference} IS ?", non_deleted_value]
+  end
+
+  def is_paranoid_deleted
+    ["#{paranoid_column_reference} IS NOT ?", non_deleted_value]
+  end
+
+  def non_deleted_value
+    paranoid_configuration[:column_type] == "boolean" ? false : nil
+  end
+
   def validates_as_paranoid
     extend ParanoidValidations::ClassMethods
   end
@@ -79,7 +91,7 @@ module ActsAsParanoid
     return if paranoid?
 
     # Magic!
-    default_scope where("#{paranoid_column_reference} IS ?", nil)
+    default_scope where(*is_not_paranoid_deleted)
 
     scope :paranoid_deleted_around_time, lambda {|value, window|
       if self.class.respond_to?(:paranoid?) && self.class.paranoid?
@@ -113,7 +125,7 @@ module ActsAsParanoid
     end
 
     def only_deleted
-      self.unscoped.where("#{paranoid_column_reference} IS NOT ?", nil)
+      self.unscoped.where(*is_paranoid_deleted)
     end
 
     def deletion_conditions(id_or_array)
@@ -175,7 +187,7 @@ module ActsAsParanoid
     end
 
     def destroy
-      if paranoid_value.nil?
+      if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
             self.class.delete_all(self.class.primary_key.to_sym => self.id)
@@ -198,7 +210,7 @@ module ActsAsParanoid
     end
 
     def delete
-      if paranoid_value.nil?
+      if !deleted?
         with_transaction_returning_status do
           self.class.delete_all(self.class.primary_key.to_sym => self.id)
           self.paranoid_value = self.class.delete_now_value
@@ -219,7 +231,7 @@ module ActsAsParanoid
         run_callbacks :recover do
           recover_dependent_associations(options[:recovery_window], options) if options[:recursive]
 
-          self.paranoid_value = nil
+          self.paranoid_value = self.class.non_deleted_value
           self.save
         end
       end
@@ -259,7 +271,7 @@ module ActsAsParanoid
     end
 
     def deleted?
-      !paranoid_value.nil?
+      !(paranoid_value == self.class.non_deleted_value)
     end
     alias_method :destroyed?, :deleted?
 
