@@ -74,52 +74,52 @@ def setup_db
 
       t.timestamps
     end
-    
+
     create_table :paranoid_with_callbacks do |t|
       t.string    :name
       t.datetime  :deleted_at
-      
+
       t.timestamps
     end
 
     create_table :paranoid_destroy_companies do |t|
       t.string :name
       t.datetime :deleted_at
-      
+
       t.timestamps
     end
-    
+
     create_table :paranoid_delete_companies do |t|
       t.string :name
       t.datetime :deleted_at
-      
+
       t.timestamps
     end
-    
+
     create_table :paranoid_products do |t|
       t.integer :paranoid_destroy_company_id
       t.integer :paranoid_delete_company_id
       t.string :name
       t.datetime :deleted_at
-      
+
       t.timestamps
     end
-    
+
     create_table :super_paranoids do |t|
       t.string :type
       t.references :has_many_inherited_super_paranoidz
       t.datetime :deleted_at
-      
+
       t.timestamps
     end
-    
+
     create_table :has_many_inherited_super_paranoidzs do |t|
       t.references :super_paranoidz
       t.datetime :deleted_at
-      
+
       t.timestamps
     end
-    
+
     create_table :paranoid_many_many_parent_lefts do |t|
       t.string :name
       t.timestamps
@@ -129,21 +129,21 @@ def setup_db
       t.string :name
       t.timestamps
     end
-    
+
     create_table :paranoid_many_many_children do |t|
       t.integer :paranoid_many_many_parent_left_id
       t.integer :paranoid_many_many_parent_right_id
       t.datetime :deleted_at
       t.timestamps
     end
-    
+
     create_table :paranoid_with_scoped_validations do |t|
       t.string :name
       t.string :category
       t.datetime :deleted_at
       t.timestamps
     end
-    
+
   end
 end
 
@@ -206,31 +206,31 @@ end
 
 class ParanoidWithCallback < ActiveRecord::Base
   acts_as_paranoid
-  
+
   attr_accessor :called_before_destroy, :called_after_destroy, :called_after_commit_on_destroy
   attr_accessor :called_before_recover, :called_after_recover
-  
+
   before_destroy :call_me_before_destroy
   after_destroy :call_me_after_destroy
-  
+
   after_commit :call_me_after_commit_on_destroy, :on => :destroy
 
   before_recover :call_me_before_recover
   after_recover :call_me_after_recover
-  
+
   def initialize(*attrs)
     @called_before_destroy = @called_after_destroy = @called_after_commit_on_destroy = false
     super(*attrs)
   end
-  
+
   def call_me_before_destroy
     @called_before_destroy = true
   end
-  
+
   def call_me_after_destroy
     @called_after_destroy = true
   end
-  
+
   def call_me_after_commit_on_destroy
     @called_after_commit_on_destroy = true
   end
@@ -325,7 +325,7 @@ class ParanoidBaseTest < ActiveSupport::TestCase
   def assert_empty(collection)
     assert(collection.respond_to?(:empty?) && collection.empty?)
   end
-  
+
   def setup
     setup_db
 
