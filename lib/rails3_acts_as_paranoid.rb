@@ -128,7 +128,7 @@ module ActsAsParanoid
     return if paranoid?
 
     # Magic!
-    default_scope where(*is_not_paranoid_deleted)
+    default_scope { where(*is_not_paranoid_deleted) }
 
     scope :paranoid_deleted_around_time, lambda {|value, window|
       if self.class.respond_to?(:paranoid?) && self.class.paranoid?
