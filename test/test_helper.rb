@@ -26,7 +26,7 @@ def setup_db
 
     create_table :paranoid_booleans do |t|
       t.string    :name
-      t.boolean   :is_deleted
+      t.boolean   :is_deleted, :default => false
       t.integer   :paranoid_time_id
 
       t.timestamps
