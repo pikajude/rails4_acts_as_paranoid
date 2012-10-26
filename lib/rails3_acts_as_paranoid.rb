@@ -70,11 +70,13 @@ module ActsAsParanoid
   end
 
   def is_not_paranoid_deleted
-    ["#{paranoid_column_reference} IS ?", non_deleted_value]
+    operator = non_deleted_value.nil? ? "IS" : "="
+    ["#{paranoid_column_reference} #{operator} ?", non_deleted_value]
   end
 
   def is_paranoid_deleted
-    ["#{paranoid_column_reference} IS NOT ?", non_deleted_value]
+    operator = non_deleted_value.nil? ? "IS NOT" : "!="
+    ["#{paranoid_column_reference} #{operator} ?", non_deleted_value]
   end
 
   def non_deleted_value
