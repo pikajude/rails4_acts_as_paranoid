@@ -97,6 +97,7 @@ module ActsAsParanoid
 
   def build_column_config(options={})
     column = DEFAULT_CONFIG.dup
+    column.delete(:columns)
     column = column.merge(:deleted_value => "deleted") if options[:column_type] == "string"
     column = column.merge(options)
 
@@ -112,6 +113,7 @@ module ActsAsParanoid
 
     class_attribute :paranoid_configuration, :paranoid_column_reference
 
+    options = DEFAULT_CONFIG.merge(options)
     if options[:columns]
       primary_column    = options[:columns].first
       secondary_columns = options[:columns][1..-1]
@@ -123,7 +125,6 @@ module ActsAsParanoid
       :primary_column    => build_column_config(primary_column),
       :secondary_columns => secondary_columns.map { |column| build_column_config(column) }
     }
-
 
     self.paranoid_column_reference = "#{self.table_name}.#{primary_paranoid_column[:column]}"
 

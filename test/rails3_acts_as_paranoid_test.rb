@@ -36,6 +36,14 @@ class ParanoidTest < ParanoidBaseTest
     assert_equal Time, model.deleted_at.class
   end
 
+  def test_default_multi_column_config
+    model = ParanoidBooleanAndDateDefaultConfig.first
+    model.destroy
+    model.reload
+    assert_equal true, model.is_deleted
+    assert_equal Time, model.deleted_at.class
+  end
+
   def test_real_removal
     ParanoidTime.first.destroy!
     ParanoidBoolean.delete_all!("name = 'extremely paranoid' OR name = 'really paranoid'")
