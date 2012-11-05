@@ -186,6 +186,17 @@ class ParanoidBoolean < ActiveRecord::Base
   belongs_to :paranoid_time
   has_one :paranoid_has_one_dependant, :dependent => :destroy
 end
+
+ActsAsParanoid.default_config = {
+  :columns => [
+    { :column => "is_deleted", :column_type => "boolean" },
+    { :column => "deleted_at", :column_type => "time" }
+  ]
+}
+class ParanoidBooleanAndDateDefaultConfig < ActiveRecord::Base
+  set_table_name :paranoid_boolean_and_dates
+  acts_as_paranoid
+end
 Kernel.silence_warnings { ActsAsParanoid::DEFAULT_CONFIG = default_config }
 
 class ParanoidBooleanAndDate < ActiveRecord::Base
