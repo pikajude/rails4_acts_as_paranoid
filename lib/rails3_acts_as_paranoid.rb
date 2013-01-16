@@ -224,23 +224,23 @@ module ActsAsParanoid
     end
 
     def destroy!
+      return self unless check_persisted_for_delete(true)
       with_transaction_returning_status do
         run_callbacks :destroy do
           act_on_dependent_destroy_associations
           self.class.delete_all!(self.class.primary_key.to_sym => self.id)
-          self.paranoid_value = self.class.delete_now_value
-          freeze
+          set_paranoid_value true
         end
       end
     end
 
     def destroy
+      return self unless check_persisted_for_delete(false)
       if !deleted?
         with_transaction_returning_status do
           run_callbacks :destroy do
             self.class.delete_all(self.class.primary_key.to_sym => self.id)
-            self.paranoid_value = self.class.delete_now_value
-            self
+            set_paranoid_value false
           end
         end
       else
@@ -249,20 +249,20 @@ module ActsAsParanoid
     end
 
     def delete!
+      return self unless check_persisted_for_delete(true)
       with_transaction_returning_status do
         act_on_dependent_destroy_associations
         self.class.delete_all!(self.class.primary_key.to_sym => self.id)
-        self.paranoid_value = self.class.delete_now_value
-        freeze
+        set_paranoid_value true
       end
     end
 
     def delete
+      return self unless check_persisted_for_delete(false)
       if !deleted?
         with_transaction_returning_status do
           self.class.delete_all(self.class.primary_key.to_sym => self.id)
-          self.paranoid_value = self.class.delete_now_value
-          self
+          set_paranoid_value false
         end
       else
         delete!
@@ -328,6 +328,19 @@ module ActsAsParanoid
       self.send("#{self.class.paranoid_column}=", value)
     end
 
+    def check_persisted_for_delete(permanent)
+      if !self.id
+        set_paranoid_value permanent
+        return false
+      end
+      true
+    end
+
+    def set_paranoid_value(permanent)
+      self.paranoid_value = self.class.delete_now_value
+      freeze if permanent
+      self
+    end
   end
 
 end
