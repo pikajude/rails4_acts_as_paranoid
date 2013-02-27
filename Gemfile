@@ -1,10 +1,11 @@
 source "http://rubygems.org"
 
-gem "activerecord", "~>3.1"
+gem "activerecord", ">= 4.0.0.beta1"
 
 # Development dependencies 
 gem "rake"
-gem "activesupport", "~>3.1"
+gem "activerecord", ">= 4.0.0.beta1"
+gem "rails-observers"
 gem "sqlite3-ruby"
 
 group :test do

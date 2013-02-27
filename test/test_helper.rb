@@ -3,6 +3,7 @@ require 'test/unit'
 require 'active_support'
 require 'active_support/core_ext/numeric/time'
 require 'active_record'
+require 'rails/observers/activerecord/active_record'
 require 'active_model'
 
 $:.unshift "#{File.dirname(__FILE__)}/../"
@@ -194,7 +195,7 @@ ActsAsParanoid.default_config = {
   ]
 }
 class ParanoidBooleanAndDateDefaultConfig < ActiveRecord::Base
-  set_table_name :paranoid_boolean_and_dates
+  self.table_name = :paranoid_boolean_and_dates
   acts_as_paranoid
 end
 Kernel.silence_warnings { ActsAsParanoid::DEFAULT_CONFIG = default_config }
@@ -325,7 +326,6 @@ class ParanoidObserver < ActiveRecord::Observer
     self.called_after_recover = nil
   end
 end
-
 
 class ParanoidManyManyParentLeft < ActiveRecord::Base
   has_many :paranoid_many_many_children

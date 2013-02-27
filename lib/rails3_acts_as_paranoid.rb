@@ -15,7 +15,7 @@ module ActiveRecord
     alias_method :destroy!, :destroy
     def destroy(id)
       if paranoid?
-        update_all(paranoid_deletion_attributes, {:id => id})
+        where(id: id).update_all(paranoid_deletion_attributes)
       else
         destroy!(id)
       end
@@ -192,7 +192,7 @@ module ActsAsParanoid
       end.join(", ")
       values = columns.map{ |column| delete_now_value(column) }
 
-      update_all [sql, *values], conditions
+      where(conditions).update_all [sql, *values]
     end
 
     def paranoid_column
@@ -311,7 +311,7 @@ module ActsAsParanoid
     def act_on_dependent_destroy_associations
       self.class.dependent_associations.each do |association|
         if association.collection? && self.send(association.name).paranoid?
-          association.klass.with_deleted.instance_eval("find_all_by_#{association.foreign_key}(#{self.id.to_json})").each do |object|
+          association.klass.with_deleted.where(association.foreign_key.to_sym => self.id.to_json).each do |object|
             object.destroy!
           end
         end
