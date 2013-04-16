@@ -1,1 +1,1 @@
-require 'rails3_acts_as_paranoid'
+require 'rails4_acts_as_paranoid'

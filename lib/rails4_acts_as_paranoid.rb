@@ -5,6 +5,28 @@ require 'ruby-debug'
 
 module ActiveRecord
   class Relation
+    VALUES = [
+      :bind_values,
+      :create_with_value,
+      :eager_load_values,
+      :from_value,
+      :group_values,
+      :having_values,
+      :includes_values,
+      :joins_values,
+      :limit_value,
+      :lock_value,
+      :offset_value,
+      :order_values,
+      :preload_values,
+      :readonly_value,
+      :reordering_value,
+      :reverse_order_value,
+      :select_values,
+      :uniq_value,
+      :where_values
+    ]
+
     def paranoid?
       klass.try(:paranoid?) ? true : false
     end
@@ -46,11 +68,12 @@ module ActiveRecord
     end
 
     def with_deleted
-      ActiveRecord::Base.logger = Logger.new $stdout
       wd = self.clone.unscoped
-      wd.arel = self.build_arel
-      debugger
-      ActiveRecord::Base.logger = Logger.new "/dev/null"
+      VALUES.each do |v|
+        if self.respond_to?(v) && wd.respond_to?("#{v}=")
+          wd.send("#{v}=", self.send(v))
+        end
+      end
       wd
     end
   end
