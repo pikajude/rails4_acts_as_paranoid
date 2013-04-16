@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   
   s.add_dependency "activerecord", ">= 4.0.0.beta1"
+  s.add_dependency "rails-observers"
 
   s.files        = Dir["{lib}/**/*.rb", "LICENSE", "*.markdown"]
 end

@@ -1,5 +1,6 @@
 require 'active_record'
 require 'validations/uniqueness_without_deleted'
+require 'ruby-debug'
 
 
 module ActiveRecord
@@ -45,9 +46,11 @@ module ActiveRecord
     end
 
     def with_deleted
-      wd = self.clone
-      wd.default_scoped = false
+      ActiveRecord::Base.logger = Logger.new $stdout
+      wd = self.clone.unscoped
       wd.arel = self.build_arel
+      debugger
+      ActiveRecord::Base.logger = Logger.new "/dev/null"
       wd
     end
   end
@@ -150,6 +153,7 @@ module ActsAsParanoid
   module ClassMethods
     def self.extended(base)
       base.define_callbacks :recover
+      base.skip_time_zone_conversion_for_attributes = [base.paranoid_column, :created_at, :updated_at]
     end
 
     def before_recover(method)
@@ -210,7 +214,7 @@ module ActsAsParanoid
     def delete_now_value(column=nil)
       column ||= primary_paranoid_column
       case column[:column_type]
-        when "time" then Time.now
+        when "time" then Time.now.utc
         when "boolean" then true
         when "string" then column[:deleted_value]
       end

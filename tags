@@ -1,0 +1,124 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ActiveRecord	lib/rails3_acts_as_paranoid.rb	/^module ActiveRecord$/;"	m
+ActsAsParanoid	lib/rails3_acts_as_paranoid.rb	/^module ActsAsParanoid$/;"	m
+AssociationsTest	test/rails4_acts_as_paranoid_test.rb	/^class AssociationsTest < ParanoidBaseTest$/;"	c
+ClassMethods	lib/rails3_acts_as_paranoid.rb	/^  module ClassMethods$/;"	m	class:ActsAsParanoid
+ClassMethods	lib/validations/uniqueness_without_deleted.rb	/^  module ClassMethods$/;"	m	class:ParanoidValidations
+HasManyInheritedSuperParanoidz	test/test_helper.rb	/^class HasManyInheritedSuperParanoidz < ActiveRecord::Base$/;"	c
+HasOneNotParanoid	test/test_helper.rb	/^class HasOneNotParanoid < ActiveRecord::Base$/;"	c
+InheritanceTest	test/rails4_acts_as_paranoid_test.rb	/^class InheritanceTest < ParanoidBaseTest$/;"	c
+InheritedParanoid	test/test_helper.rb	/^class InheritedParanoid < SuperParanoid$/;"	c
+InstanceMethods	lib/rails3_acts_as_paranoid.rb	/^  module InstanceMethods$/;"	m	class:ActsAsParanoid.ClassMethods
+MoreParanoidTest	test/more_paranoid_test.rb	/^class MoreParanoidTest < ParanoidBaseTest$/;"	c
+NotParanoid	test/test_helper.rb	/^class NotParanoid < ActiveRecord::Base$/;"	c
+ParanoidBaseTest	test/test_helper.rb	/^class ParanoidBaseTest < ActiveSupport::TestCase$/;"	c
+ParanoidBelongsDependant	test/test_helper.rb	/^class ParanoidBelongsDependant < ActiveRecord::Base$/;"	c
+ParanoidBoolean	test/test_helper.rb	/^class ParanoidBoolean < ActiveRecord::Base$/;"	c
+ParanoidBooleanAndDate	test/test_helper.rb	/^class ParanoidBooleanAndDate < ActiveRecord::Base$/;"	c
+ParanoidBooleanAndDateDefaultConfig	test/test_helper.rb	/^class ParanoidBooleanAndDateDefaultConfig < ActiveRecord::Base$/;"	c
+ParanoidDeleteCompany	test/test_helper.rb	/^class ParanoidDeleteCompany < ActiveRecord::Base$/;"	c
+ParanoidDestroyCompany	test/test_helper.rb	/^class ParanoidDestroyCompany < ActiveRecord::Base$/;"	c
+ParanoidHasManyDependant	test/test_helper.rb	/^class ParanoidHasManyDependant < ActiveRecord::Base$/;"	c
+ParanoidHasOneDependant	test/test_helper.rb	/^class ParanoidHasOneDependant < ActiveRecord::Base$/;"	c
+ParanoidManyManyChild	test/test_helper.rb	/^class ParanoidManyManyChild < ActiveRecord::Base$/;"	c
+ParanoidManyManyParentLeft	test/test_helper.rb	/^class ParanoidManyManyParentLeft < ActiveRecord::Base$/;"	c
+ParanoidManyManyParentRight	test/test_helper.rb	/^class ParanoidManyManyParentRight < ActiveRecord::Base$/;"	c
+ParanoidObserver	test/test_helper.rb	/^class ParanoidObserver < ActiveRecord::Observer$/;"	c
+ParanoidObserverTest	test/rails4_acts_as_paranoid_test.rb	/^class ParanoidObserverTest < ParanoidBaseTest$/;"	c
+ParanoidProduct	test/test_helper.rb	/^class ParanoidProduct < ActiveRecord::Base$/;"	c
+ParanoidString	test/test_helper.rb	/^class ParanoidString < ActiveRecord::Base$/;"	c
+ParanoidTest	test/rails4_acts_as_paranoid_test.rb	/^class ParanoidTest < ParanoidBaseTest$/;"	c
+ParanoidTime	test/test_helper.rb	/^class ParanoidTime < ActiveRecord::Base$/;"	c
+ParanoidValidations	lib/validations/uniqueness_without_deleted.rb	/^module ParanoidValidations$/;"	m
+ParanoidWithCallback	test/test_helper.rb	/^class ParanoidWithCallback < ActiveRecord::Base$/;"	c
+ParanoidWithScopedValidation	test/test_helper.rb	/^class ParanoidWithScopedValidation < ActiveRecord::Base$/;"	c
+Relation	lib/rails3_acts_as_paranoid.rb	/^  class Relation$/;"	c	class:ActiveRecord
+SuperParanoid	test/test_helper.rb	/^class SuperParanoid < ActiveRecord::Base$/;"	c
+UniquenessWithoutDeletedValidator	lib/validations/uniqueness_without_deleted.rb	/^  class UniquenessWithoutDeletedValidator < ActiveRecord::Validations::UniquenessValidator$/;"	c	class:ParanoidValidations
+ValidatesUniquenessTest	test/rails4_acts_as_paranoid_test.rb	/^class ValidatesUniquenessTest < ParanoidBaseTest$/;"	c
+act_on_dependent_destroy_associations	lib/rails3_acts_as_paranoid.rb	/^    def act_on_dependent_destroy_associations$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+acts_as_paranoid	lib/rails3_acts_as_paranoid.rb	/^  def acts_as_paranoid(options = {})$/;"	f	class:ActsAsParanoid
+after_recover	lib/rails3_acts_as_paranoid.rb	/^    def after_recover(method)$/;"	f	class:ActsAsParanoid.ClassMethods
+after_recover	test/test_helper.rb	/^  def after_recover(paranoid_object)$/;"	f	class:ParanoidObserver
+arel=	lib/rails3_acts_as_paranoid.rb	/^    def arel=(a)$/;"	f	class:ActiveRecord.Relation
+assert_empty	test/test_helper.rb	/^  def assert_empty(collection)$/;"	f	class:ParanoidBaseTest
+assert_non_paranoid_deletion	test/more_paranoid_test.rb	/^  def assert_non_paranoid_deletion(model)$/;"	f
+assert_paranoid_deletion	test/more_paranoid_test.rb	/^  def assert_paranoid_deletion(model)$/;"	f
+before_recover	lib/rails3_acts_as_paranoid.rb	/^    def before_recover(method)$/;"	f	class:ActsAsParanoid.ClassMethods
+before_recover	test/test_helper.rb	/^  def before_recover(paranoid_object)$/;"	f	class:ParanoidObserver
+build_column_config	lib/rails3_acts_as_paranoid.rb	/^  def build_column_config(options={})$/;"	f	class:ActsAsParanoid
+call_me_after_commit_on_destroy	test/test_helper.rb	/^  def call_me_after_commit_on_destroy$/;"	f	class:ParanoidWithCallback
+call_me_after_destroy	test/test_helper.rb	/^  def call_me_after_destroy$/;"	f	class:ParanoidWithCallback
+call_me_after_recover	test/test_helper.rb	/^  def call_me_after_recover$/;"	f	class:ParanoidWithCallback
+call_me_before_destroy	test/test_helper.rb	/^  def call_me_before_destroy$/;"	f	class:ParanoidWithCallback
+call_me_before_recover	test/test_helper.rb	/^  def call_me_before_recover$/;"	f	class:ParanoidWithCallback
+check_persisted_for_delete	lib/rails3_acts_as_paranoid.rb	/^    def check_persisted_for_delete(permanent)$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+default_config	lib/rails3_acts_as_paranoid.rb	/^  def self.default_config=(config={})$/;"	F	class:ActsAsParanoid
+delete	lib/rails3_acts_as_paranoid.rb	/^    def delete$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+delete	lib/rails3_acts_as_paranoid.rb	/^    def delete(id_or_array)$/;"	f	class:ActsAsParanoid.ClassMethods
+delete!	lib/rails3_acts_as_paranoid.rb	/^    def delete!$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+delete!	lib/rails3_acts_as_paranoid.rb	/^    def delete!(id_or_array)$/;"	f	class:ActsAsParanoid.ClassMethods
+delete_all	lib/rails3_acts_as_paranoid.rb	/^    def delete_all(conditions = nil)$/;"	f	class:ActiveRecord.Relation
+delete_all	lib/rails3_acts_as_paranoid.rb	/^    def delete_all(conditions = nil)$/;"	f	class:ActsAsParanoid.ClassMethods
+delete_all!	lib/rails3_acts_as_paranoid.rb	/^    def delete_all!(conditions = nil)$/;"	f	class:ActiveRecord.Relation
+delete_all!	lib/rails3_acts_as_paranoid.rb	/^    def delete_all!(conditions = nil)$/;"	f	class:ActsAsParanoid.ClassMethods
+delete_now_value	lib/rails3_acts_as_paranoid.rb	/^    def delete_now_value(column=nil)$/;"	f	class:ActsAsParanoid.ClassMethods.delete_all
+deleted?	lib/rails3_acts_as_paranoid.rb	/^    def deleted?$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+deletion_conditions	lib/rails3_acts_as_paranoid.rb	/^    def deletion_conditions(id_or_array)$/;"	f	class:ActsAsParanoid.ClassMethods
+dependent_associations	lib/rails3_acts_as_paranoid.rb	/^    def dependent_associations$/;"	f	class:ActsAsParanoid.ClassMethods.delete_all
+destroy	lib/rails3_acts_as_paranoid.rb	/^    def destroy$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+destroy	lib/rails3_acts_as_paranoid.rb	/^    def destroy(id)$/;"	f	class:ActiveRecord.Relation
+destroy!	lib/rails3_acts_as_paranoid.rb	/^    def destroy!$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+extended	lib/rails3_acts_as_paranoid.rb	/^    def self.extended(base)$/;"	F	class:ActsAsParanoid.ClassMethods
+find_row	test/more_paranoid_test.rb	/^  def find_row(model)$/;"	f
+initialize	test/test_helper.rb	/^  def initialize(*attrs)$/;"	f	class:ParanoidWithCallback
+is_not_paranoid_deleted	lib/rails3_acts_as_paranoid.rb	/^  def is_not_paranoid_deleted$/;"	f	class:ActsAsParanoid
+is_paranoid_deleted	lib/rails3_acts_as_paranoid.rb	/^  def is_paranoid_deleted$/;"	f	class:ActsAsParanoid
+non_deleted_value	lib/rails3_acts_as_paranoid.rb	/^  def non_deleted_value$/;"	f	class:ActsAsParanoid
+only_deleted	lib/rails3_acts_as_paranoid.rb	/^    def only_deleted$/;"	f	class:ActsAsParanoid.ClassMethods
+paranoid?	lib/rails3_acts_as_paranoid.rb	/^    def paranoid?$/;"	f	class:ActiveRecord.Relation
+paranoid?	lib/rails3_acts_as_paranoid.rb	/^  def paranoid?$/;"	f	class:ActsAsParanoid
+paranoid_column	lib/rails3_acts_as_paranoid.rb	/^    def paranoid_column$/;"	f	class:ActsAsParanoid.ClassMethods.delete_all
+paranoid_column_type	lib/rails3_acts_as_paranoid.rb	/^    def paranoid_column_type$/;"	f	class:ActsAsParanoid.ClassMethods.delete_all
+paranoid_deletion_attributes	lib/rails3_acts_as_paranoid.rb	/^    def paranoid_deletion_attributes$/;"	f	class:ActiveRecord.Relation
+paranoid_value	lib/rails3_acts_as_paranoid.rb	/^    def paranoid_value$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+paranoid_value=	lib/rails3_acts_as_paranoid.rb	/^    def paranoid_value=(value)$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+primary_paranoid_column	lib/rails3_acts_as_paranoid.rb	/^  def primary_paranoid_column$/;"	f	class:ActsAsParanoid
+recover	lib/rails3_acts_as_paranoid.rb	/^    def recover(options={})$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+recover_dependent_associations	lib/rails3_acts_as_paranoid.rb	/^    def recover_dependent_associations(window, options)$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+reset	test/test_helper.rb	/^  def reset$/;"	f	class:ParanoidObserver
+secondary_paranoid_columns	lib/rails3_acts_as_paranoid.rb	/^  def secondary_paranoid_columns$/;"	f	class:ActsAsParanoid
+set_paranoid_value	lib/rails3_acts_as_paranoid.rb	/^    def set_paranoid_value(permanent)$/;"	f	class:ActsAsParanoid.ClassMethods.InstanceMethods
+setup	test/test_helper.rb	/^  def setup$/;"	f	class:ParanoidBaseTest
+setup_db	test/test_helper.rb	/^def setup_db$/;"	f
+setup_recursive_recovery_tests	test/rails4_acts_as_paranoid_test.rb	/^  def setup_recursive_recovery_tests$/;"	f	class:ParanoidTest
+teardown	test/test_helper.rb	/^  def teardown$/;"	f
+teardown_db	test/test_helper.rb	/^def teardown_db$/;"	f
+test_called_observer_methods	test/rails4_acts_as_paranoid_test.rb	/^  def test_called_observer_methods$/;"	f	class:ParanoidObserverTest
+test_class_instance_variables_are_inherited	test/rails4_acts_as_paranoid_test.rb	/^  def test_class_instance_variables_are_inherited$/;"	f	class:InheritanceTest
+test_default_multi_column_config	test/rails4_acts_as_paranoid_test.rb	/^  def test_default_multi_column_config$/;"	f	class:ParanoidTest
+test_deleted?	test/rails4_acts_as_paranoid_test.rb	/^  def test_deleted?$/;"	f	class:ParanoidTest
+test_destroy_dependents_with_inheritance	test/rails4_acts_as_paranoid_test.rb	/^  def test_destroy_dependents_with_inheritance$/;"	f	class:InheritanceTest
+test_fake_removal	test/rails4_acts_as_paranoid_test.rb	/^  def test_fake_removal$/;"	f	class:ParanoidTest
+test_hard_destroy_callbacks	test/rails4_acts_as_paranoid_test.rb	/^  def test_hard_destroy_callbacks$/;"	f	class:ParanoidTest
+test_multi_column_support	test/rails4_acts_as_paranoid_test.rb	/^  def test_multi_column_support$/;"	f	class:ParanoidTest
+test_non_recursive_recovery	test/rails4_acts_as_paranoid_test.rb	/^  def test_non_recursive_recovery$/;"	f	class:ParanoidTest
+test_paranoid_destroy_callbacks	test/rails4_acts_as_paranoid_test.rb	/^  def test_paranoid_destroy_callbacks$/;"	f	class:ParanoidTest
+test_paranoid_scope	test/rails4_acts_as_paranoid_test.rb	/^  def test_paranoid_scope$/;"	f	class:ParanoidTest
+test_real_removal	test/rails4_acts_as_paranoid_test.rb	/^  def test_real_removal$/;"	f	class:ParanoidTest
+test_recovery	test/rails4_acts_as_paranoid_test.rb	/^  def test_recovery$/;"	f	class:ParanoidTest
+test_recovery_callbacks	test/rails4_acts_as_paranoid_test.rb	/^  def test_recovery_callbacks$/;"	f	class:ParanoidTest
+test_recursive_recovery	test/rails4_acts_as_paranoid_test.rb	/^  def test_recursive_recovery$/;"	f	class:ParanoidTest
+test_removal_with_associations	test/rails4_acts_as_paranoid_test.rb	/^  def test_removal_with_associations$/;"	f	class:AssociationsTest
+test_should_include_deleted_by_default	test/rails4_acts_as_paranoid_test.rb	/^  def test_should_include_deleted_by_default$/;"	f	class:ValidatesUniquenessTest
+test_should_validate_without_deleted	test/rails4_acts_as_paranoid_test.rb	/^  def test_should_validate_without_deleted$/;"	f	class:ValidatesUniquenessTest
+validate_each	lib/validations/uniqueness_without_deleted.rb	/^    def validate_each(record, attribute, value)$/;"	f	class:ParanoidValidations.UniquenessWithoutDeletedValidator
+validates_as_paranoid	lib/rails3_acts_as_paranoid.rb	/^  def validates_as_paranoid$/;"	f	class:ActsAsParanoid
+validates_uniqueness_of_without_deleted	lib/validations/uniqueness_without_deleted.rb	/^    def validates_uniqueness_of_without_deleted(*attr_names)$/;"	f	class:ParanoidValidations.ClassMethods
+with_deleted	lib/rails3_acts_as_paranoid.rb	/^    def with_deleted$/;"	f	class:ActiveRecord.Relation
+with_deleted	lib/rails3_acts_as_paranoid.rb	/^    def with_deleted$/;"	f	class:ActsAsParanoid.ClassMethods

@@ -12,4 +12,5 @@ group :test do
   gem "minitest"
   gem "ZenTest"
   gem "autotest-growl"
+  gem "debugger"
 end

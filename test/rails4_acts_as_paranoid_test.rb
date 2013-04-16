@@ -1,4 +1,4 @@
-require 'test_helper'
+require File.expand_path('test_helper', File.dirname(__FILE__))
 
 class ParanoidTest < ParanoidBaseTest
   def test_fake_removal
@@ -73,7 +73,6 @@ class ParanoidTest < ParanoidBaseTest
 
   def test_paranoid_scope
     assert_raise(NoMethodError) { NotParanoid.delete_all! }
-    assert_raise(NoMethodError) { NotParanoid.first.destroy! }
     assert_raise(NoMethodError) { NotParanoid.with_deleted }
     assert_raise(NoMethodError) { NotParanoid.only_deleted }
   end
