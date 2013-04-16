@@ -1,7 +1,5 @@
 require 'active_record'
 require 'validations/uniqueness_without_deleted'
-require 'ruby-debug'
-
 
 module ActiveRecord
   class Relation
