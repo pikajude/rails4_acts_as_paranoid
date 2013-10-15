@@ -210,7 +210,7 @@ module ActsAsParanoid
     end
 
     def delete_all(conditions = nil)
-      columns = secondary_paranoid_columns.push(primary_paranoid_column)
+      columns = secondary_paranoid_columns.clone.push(primary_paranoid_column)
 
       sql = columns.map do |column|
         "#{column[:column]} = ?"
